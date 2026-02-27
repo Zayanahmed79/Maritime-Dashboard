@@ -4,11 +4,11 @@ import { useState } from 'react'
 import { useLanguage } from '@/contexts/language-context'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { 
-  BookOpen, 
-  Map, 
-  Shield, 
-  AlertCircle, 
+import {
+  BookOpen,
+  Map,
+  Shield,
+  AlertCircle,
   Phone,
   ChevronRight,
   ChevronDown,
@@ -16,6 +16,14 @@ import {
   XCircle,
   ExternalLink
 } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '@/components/ui/dialog'
+
 
 type Section = 'zones' | 'safety' | 'emergency' | 'contacts' | null
 
@@ -103,14 +111,13 @@ export function EducationSection() {
         {sections.map((section) => {
           const isActive = activeSection === section.id
           const Icon = section.icon
-          
+
           return (
             <div key={section.id} className="border rounded-lg overflow-hidden">
               <button
                 onClick={() => toggleSection(section.id)}
-                className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
-                  isActive ? 'bg-muted' : 'hover:bg-muted/50'
-                }`}
+                className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${isActive ? 'bg-muted' : 'hover:bg-muted/50'
+                  }`}
               >
                 <div className={`p-2 rounded-lg bg-muted ${section.color}`}>
                   <Icon className="w-4 h-4" />
@@ -119,113 +126,119 @@ export function EducationSection() {
                   <p className="font-medium text-sm">{section.title}</p>
                   <p className="text-xs text-muted-foreground truncate">{section.description}</p>
                 </div>
-                {isActive ? (
-                  <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                )}
+                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               </button>
-
-              {isActive && (
-                <div className="p-3 pt-0 border-t bg-muted/30">
-                  {/* Zones Content */}
-                  {section.id === 'zones' && (
-                    <div className="space-y-2 mt-3">
-                      {zones.map((zone) => (
-                        <div key={zone.key} className={`p-3 rounded-lg border ${zone.color}`}>
-                          <p className="font-medium text-sm">{t(`zones.${zone.key}`)}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {t(`zones.${zone.key}_desc`)}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Safety Content */}
-                  {section.id === 'safety' && (
-                    <div className="space-y-3 mt-3">
-                      <div>
-                        <p className="text-xs font-semibold text-safe mb-2 flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3" />
-                          {t('do')}
-                        </p>
-                        <div className="space-y-1.5">
-                          {safetyDos.map((item) => (
-                            <div key={item} className="flex items-start gap-2 text-sm">
-                              <CheckCircle className="w-4 h-4 text-safe flex-shrink-0 mt-0.5" />
-                              <span>{t(item)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-danger mb-2 flex items-center gap-1">
-                          <XCircle className="w-3 h-3" />
-                          {t('dont')}
-                        </p>
-                        <div className="space-y-1.5">
-                          {safetyDonts.map((item) => (
-                            <div key={item} className="flex items-start gap-2 text-sm">
-                              <XCircle className="w-4 h-4 text-danger flex-shrink-0 mt-0.5" />
-                              <span>{t(item)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Emergency Content */}
-                  {section.id === 'emergency' && (
-                    <div className="space-y-2 mt-3">
-                      {emergencyProcedures.map((proc) => (
-                        <div key={proc.key} className="p-3 bg-background rounded-lg border">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-lg">{proc.icon}</span>
-                            <p className="font-medium text-sm">{t(`emergency.${proc.key}`)}</p>
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            {t(`emergency.${proc.key}_desc`)}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Contacts Content */}
-                  {section.id === 'contacts' && (
-                    <div className="space-y-2 mt-3">
-                      {contacts.map((contact) => (
-                        <div 
-                          key={contact.key} 
-                          className={`flex items-center justify-between p-3 rounded-lg border ${
-                            contact.important ? 'bg-danger/5 border-danger/20' : 'bg-background'
-                          }`}
-                        >
-                          <div>
-                            <p className="font-medium text-sm">{t(`contact.${contact.key}`)}</p>
-                            <p className="text-lg font-bold text-primary">{contact.number}</p>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant={contact.important ? 'destructive' : 'outline'}
-                            className="gap-1"
-                            onClick={() => window.open(`tel:${contact.number}`)}
-                          >
-                            <Phone className="w-3 h-3" />
-                            {t('call_now')}
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           )
         })}
       </CardContent>
+
+      <Dialog open={activeSection !== null} onOpenChange={(open) => { if (!open) setActiveSection(null) }}>
+        <DialogContent className={`${isUrdu ? 'rtl text-right' : 'ltr text-left'}`}>
+          <DialogHeader>
+            <DialogTitle>
+              {activeSection && sections.find(s => s.id === activeSection)?.title}
+            </DialogTitle>
+            <DialogDescription>
+              {activeSection && sections.find(s => s.id === activeSection)?.description}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-4 max-h-[60vh] overflow-y-auto pr-2">
+            {/* Zones Content */}
+            {activeSection === 'zones' && (
+              <div className="space-y-2">
+                {zones.map((zone) => (
+                  <div key={zone.key} className={`p-3 rounded-lg border ${zone.color}`}>
+                    <p className="font-medium text-sm">{t(`zones.${zone.key}`)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t(`zones.${zone.key}_desc`)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Safety Content */}
+            {activeSection === 'safety' && (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm font-semibold text-safe mb-2 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    {t('do')}
+                  </p>
+                  <div className="space-y-2">
+                    {safetyDos.map((item) => (
+                      <div key={item} className="flex items-start gap-2 text-sm bg-safe/5 p-2 rounded-md border border-safe/20">
+                        <CheckCircle className="w-4 h-4 text-safe flex-shrink-0 mt-0.5" />
+                        <span>{t(item)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-danger mb-2 flex items-center gap-2">
+                    <XCircle className="w-4 h-4" />
+                    {t('dont')}
+                  </p>
+                  <div className="space-y-2">
+                    {safetyDonts.map((item) => (
+                      <div key={item} className="flex items-start gap-2 text-sm bg-danger/5 p-2 rounded-md border border-danger/20">
+                        <XCircle className="w-4 h-4 text-danger flex-shrink-0 mt-0.5" />
+                        <span>{t(item)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Emergency Content */}
+            {activeSection === 'emergency' && (
+              <div className="space-y-3">
+                {emergencyProcedures.map((proc) => (
+                  <div key={proc.key} className="p-4 bg-background rounded-lg border shadow-sm">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl">{proc.icon}</span>
+                      <p className="font-semibold text-base">{t(`emergency.${proc.key}`)}</p>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {t(`emergency.${proc.key}_desc`)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Contacts Content */}
+            {activeSection === 'contacts' && (
+              <div className="space-y-3">
+                {contacts.map((contact) => (
+                  <div
+                    key={contact.key}
+                    className={`flex items-center justify-between p-4 rounded-lg border shadow-sm ${contact.important ? 'bg-danger/5 border-danger/30' : 'bg-background hover:bg-muted/50 transition-colors'
+                      }`}
+                  >
+                    <div>
+                      <p className="font-medium text-sm text-muted-foreground">{t(`contact.${contact.key}`)}</p>
+                      <p className="text-xl font-bold text-primary mt-1">{contact.number}</p>
+                    </div>
+                    <Button
+                      size="default"
+                      variant={contact.important ? 'destructive' : 'outline'}
+                      className="gap-2 shrink-0"
+                      onClick={() => window.open(`tel:${contact.number}`)}
+                    >
+                      <Phone className="w-4 h-4" />
+                      {t('call_now')}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   )
 }

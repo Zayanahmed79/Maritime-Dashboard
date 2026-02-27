@@ -8,6 +8,7 @@ import { WeatherWidget } from '@/components/dashboard/weather-widget'
 import { BoundaryWidget } from '@/components/dashboard/boundary-widget'
 import { TrafficWidget } from '@/components/dashboard/traffic-widget'
 import { AlertPanel } from '@/components/dashboard/alert-panel'
+import { VideoGuidelines } from '@/components/dashboard/video-guidelines'
 import { EducationSection } from '@/components/dashboard/education-section'
 import { AlertBar } from '@/components/dashboard/alert-bar'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -120,6 +121,9 @@ export default function MaritimeDashboard() {
               onAcknowledge={acknowledgeAlert}
               onDismiss={dismissAlert}
             />
+
+            {/* Video Guidelines */}
+            <VideoGuidelines />
 
             {/* Education Section */}
             <EducationSection />
