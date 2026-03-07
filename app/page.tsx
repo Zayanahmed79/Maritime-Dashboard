@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect } from 'react'
+
 import { useLanguage } from '@/contexts/language-context'
 import { useMaritimeData } from '@/hooks/use-maritime-data'
 import { DashboardHeader } from '@/components/dashboard/header'
@@ -39,7 +41,7 @@ function LoadingSkeleton() {
 }
 
 export default function MaritimeDashboard() {
-  const { isUrdu, t } = useLanguage()
+  const { isUrdu, t, language } = useLanguage()
   const {
     vessels,
     weather,
@@ -58,6 +60,61 @@ export default function MaritimeDashboard() {
     isUsingRealData,
     aisStatus
   } = useMaritimeData()
+
+  useEffect(() => {
+    let currentAudio: HTMLAudioElement | null = null
+
+    const handleClick = (e: MouseEvent) => {
+      if (language === 'bal') return // Balochi not supported
+
+      const target = e.target as HTMLElement
+      let text = target.innerText || target.textContent
+      if (!text) return
+
+      let speechText = text.trim()
+      if (!speechText) return
+
+      if (language === 'ur') {
+        const unitTranslations = [
+          { eng: /\bnm\b/ig, ur: 'بحری میل' },
+          { eng: /\bkm\b/ig, ur: 'کلومیٹر' },
+          { eng: /\bm\b/ig, ur: 'میٹر' },
+          { eng: /\bknots\b/ig, ur: 'ناٹ' },
+          { eng: /°C/g, ur: 'ڈگری سینٹی گریڈ' },
+          { eng: /\bhPa\b/ig, ur: 'ہیکٹوپاسکل' }
+        ]
+
+        unitTranslations.forEach(unit => {
+          speechText = speechText.replace(unit.eng, unit.ur)
+        })
+      }
+
+      // Stop any currently playing audio
+      if (currentAudio) {
+        currentAudio.pause()
+        currentAudio.currentTime = 0
+      }
+
+      // Build the local proxy TTS URL for English and Urdu
+      const ttsLang = language === 'ur' ? 'ur' : 'en'
+      const ttsUrl = `/api/tts?lang=${ttsLang}&text=${encodeURIComponent(speechText)}`
+
+      // Play the synthesized audio
+      currentAudio = new Audio(ttsUrl)
+      currentAudio.play().catch(err => {
+        console.error('TTS Proxy Playback failed:', err)
+      })
+    }
+
+    document.addEventListener('click', handleClick)
+    return () => {
+      document.removeEventListener('click', handleClick)
+      if (currentAudio) {
+        currentAudio.pause()
+        currentAudio = null
+      }
+    }
+  }, [language])
 
   if (isLoading) {
     return <LoadingSkeleton />
