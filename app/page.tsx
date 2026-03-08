@@ -87,6 +87,18 @@ export default function MaritimeDashboard() {
         unitTranslations.forEach(unit => {
           speechText = speechText.replace(unit.eng, unit.ur)
         })
+      } else {
+        const englishTranslations = [
+          { short: /\bnm\b/ig, long: 'nautical miles' },
+          { short: /\bkm\b/ig, long: 'kilometers' },
+          { short: /\bm\b/ig, long: 'meters' },
+          { short: /°C/g, long: 'degrees Celsius' },
+          { short: /\bhPa\b/ig, long: 'hectopascals' }
+        ]
+
+        englishTranslations.forEach(unit => {
+          speechText = speechText.replace(unit.short, unit.long)
+        })
       }
 
       // Stop any currently playing audio
